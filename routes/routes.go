@@ -4,20 +4,25 @@ import (
   "encoding/json"
   "net/http"
   "strconv"
+
   "github.com/ImnotEdMateo/guestbook/db"
   "github.com/gorilla/mux"
 )
 
 func GetEntriesHandler(w http.ResponseWriter, r *http.Request) {
-  var entries []db.Entry
-  if err := db.DB.Find(&entries).Error; err != nil {
-  	w.WriteHeader(http.StatusInternalServerError)
-  	w.Write([]byte("Error retrieving entries: " + err.Error()))
-  	return
-  }
-  
-  w.Header().Set("Content-Type", "application/json")
-  json.NewEncoder(w).Encode(entries)
+	if r.Method != http.MethodGet {
+		http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var entries []db.Entry
+	if result := db.DB.Order("created_at DESC").Find(&entries); result.Error != nil {
+		http.Error(w, "Error al obtener las entradas", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(entries)
 }
 
 func GetEntryHandler(w http.ResponseWriter, r *http.Request) {
