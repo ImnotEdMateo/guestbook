@@ -6,6 +6,7 @@ import (
   "github.com/ImnotEdMateo/guestbook/db"
   "github.com/ImnotEdMateo/guestbook/routes"
   "github.com/gorilla/mux"
+  "github.com/rs/cors"
 )
 
 func main () {
@@ -13,10 +14,17 @@ func main () {
   db.DBMigrate()
   
   r := mux.NewRouter()
-
   r.HandleFunc("/", routes.GetEntriesHandler).Methods("GET")
   r.HandleFunc("/", routes.PostEntryHandler).Methods("POST")
   r.HandleFunc("/entry/{id}", routes.GetEntryHandler).Methods("GET")
 
-  http.ListenAndServe(":3000", r)
+
+  handler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"https://astrojs.sitio.com"},
+		AllowedMethods:   []string{"GET", "POST"},
+		AllowedHeaders:   []string{"Content-Type"},
+		AllowCredentials: true,
+	}).Handler(r)
+  
+  http.ListenAndServe(":3000", handler)
 }
