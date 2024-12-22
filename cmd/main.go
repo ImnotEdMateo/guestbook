@@ -20,7 +20,7 @@ func main () {
 
 
   handler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"https://astrojs.sitio.com"},
+		AllowedOrigins:   []string{"https://edmateo.site"},
 		AllowedMethods:   []string{"GET", "POST"},
 		AllowedHeaders:   []string{"Content-Type"},
 		AllowCredentials: true,
