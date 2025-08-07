@@ -20,7 +20,7 @@ func main () {
 
 
   handler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"https://edmateo.site"},
+		AllowedOrigins:   []string{"https://edmateo.site", "http://localhost"},
 		AllowedMethods:   []string{"GET", "POST"},
 		AllowedHeaders:   []string{"Content-Type"},
 		AllowCredentials: true,
