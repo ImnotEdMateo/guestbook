@@ -1,47 +1,22 @@
 package main
 
 import (
-	"os"
 	"log"
-  "net/http"
-	"strings"
+	"net/http"
 
-  "github.com/ImnotEdMateo/guestbook/db"
-  "github.com/ImnotEdMateo/guestbook/handlers"
-  "github.com/gorilla/mux"
-  "github.com/rs/cors"
+	"github.com/ImnotEdMateo/guestbook/config"
+	"github.com/ImnotEdMateo/guestbook/db"
+	"github.com/ImnotEdMateo/guestbook/server"
 )
 
-func main () {
-	port := os.Getenv("GUESTBOOK_PORT")
-	if port == "" {
-		port = "3000"
-	}
+func main() {
+	cfg := config.Load()
 
-	origins := os.Getenv("GUESTBOOK_ALLOWED_ORIGINS")
-	if origins == "" {
-		origins = "http://localhost"
-	}
+	db.DBConnect()
+	db.DBMigrate()
 
-	allowedOrigins := strings.Split(origins, ",")
+	log.Printf("Corriendo servidor en http://0.0.0.0:%s", cfg.Port)
 
-  db.DBConnect()
-  db.DBMigrate()
-
-	log.Printf("Corriendo servidor en http://0.0.0.0:%s", port)
-
-  r := mux.NewRouter()
-  r.HandleFunc("/", handlers.GetEntriesHandler).Methods("GET")
-  r.HandleFunc("/", handlers.PostEntryHandler).Methods("POST")
-  r.HandleFunc("/entry/{id}", handlers.GetEntryHandler).Methods("GET")
-
-
-  handler := cors.New(cors.Options{
-		AllowedOrigins:   allowedOrigins,
-		AllowedMethods:   []string{"GET", "POST"},
-		AllowedHeaders:   []string{"Content-Type"},
-		AllowCredentials: true,
-	}).Handler(r)
-  
-	log.Fatal(http.ListenAndServe(":"+port, handler))
+	srv := server.NewServer(cfg.AllowedOrigins)
+	log.Fatal(http.ListenAndServe(":"+cfg.Port, srv))
 }
