@@ -7,7 +7,7 @@ import (
 	"strings"
 
   "github.com/ImnotEdMateo/guestbook/db"
-  "github.com/ImnotEdMateo/guestbook/routes"
+  "github.com/ImnotEdMateo/guestbook/handlers"
   "github.com/gorilla/mux"
   "github.com/rs/cors"
 )
@@ -31,9 +31,9 @@ func main () {
 	log.Printf("Corriendo servidor en http://0.0.0.0:%s", port)
 
   r := mux.NewRouter()
-  r.HandleFunc("/", routes.GetEntriesHandler).Methods("GET")
-  r.HandleFunc("/", routes.PostEntryHandler).Methods("POST")
-  r.HandleFunc("/entry/{id}", routes.GetEntryHandler).Methods("GET")
+  r.HandleFunc("/", handlers.GetEntriesHandler).Methods("GET")
+  r.HandleFunc("/", handlers.PostEntryHandler).Methods("POST")
+  r.HandleFunc("/entry/{id}", handlers.GetEntryHandler).Methods("GET")
 
 
   handler := cors.New(cors.Options{
